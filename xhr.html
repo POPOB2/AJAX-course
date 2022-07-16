@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>XMLHttpRequest</title>
+    <link rel="shortcut icon" href="#" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .card-group{
+            width:80vw;
+            margin:auto;
+        }
+        .card-group .card{
+            flex:unset;
+            padding:1rem;
+            border:0;
+
+        }
+        .card-group .card .card-body{
+            flex:unset;
+            padding:0.5rem;
+            border:1px solid #ccc;
+            border-radius: 0.5rem;
+            min-height:15rem;
+        }
+        .name{
+            font-weight: bolder;
+            border-bottom:1px solid #999;
+            margin:0.25rem 0;
+        }
+        .summary{
+            
+            border-bottom:1px solid #ddd;
+            box-shadow: 0 0 5px #ccc;
+            margin:0.5rem 0;
+            width:90%;
+            float:right;
+
+        }
+    </style>
+</head>
+<body>
+    <h1 class="header">XMLHttpRequest</h1>
+    <div class="title"></div>
+    <h4></h4>
+    <ul class="card-group">
+
+    </ul>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+</body>
+</html>
+<script>
+    /********************************************************
+    * 1.api網址  https://kktix.com/events.json
+    * 2.宣告一個XMLHttpRequest物件
+    * 3.建立請求的各項設定及實質內容
+    * 4.建立得到回應時的各項行為
+    * 5.送出請求
+    ********************************************************/
+
+    //宣告一個XMLHttpRequest物件 作為起頭 ( 注意大小寫 )
+    let xhr=new XMLHttpRequest;
+
+    //建立請求的各項設定及實質內容
+    //宣告 open 告訴它使用的方法與路徑
+    xhr.open('get','https://kktix.com/events.json') // open打開資料 ( 1.使用'get'方法拿到值 2.想獲得的值所在的url  3.同步or非同步/未輸入時預設為非同步)
+    
+    //建立得到回應時的各項設定及行為
+    //宣告 onload 告訴它要處理的事情
+    xhr.onload=function(){ // onload(當載入完畢 完成該請求時)
+        let type=xhr.getResponseHeader("Content-Type") // 可有可無  有輸入可以確認Type內容是否正確(文字/檔案/json)
+        let status=xhr.status // status 檢視訊息狀態 : 有||無||數值
+        let res=xhr.responseText // responseText 字串格式 (將上述拿到的值json以字串格式)存到res  
+        // console.log(type,status,res); // <檢視上述三項的內容與型態是否符合需求> (此時res其字串內容的中文字都被編碼了  無法識別)
+        // 所以執行以下兩行
+        let data=JSON.parse(res) // 該檔案為JSON格式所以用JSON.parse(res)進行解碼, 格式.解碼(要被解碼的字串內容)
+        // console.log(data); // 檢視上述 解析完成的字串
+
+        // 這裡(".title")內的.用於找到物件內的title   若無.會變成找到標籤( 上面的 <title> XMLHttpRequest </title> )
+        let title=document.querySelector(".title") // querySelector回傳第一筆title的內容(也就是上述data翻譯過後的項目中  第一筆title的內容)
+        title.innerHTML=data.title // title.innerHTML = 要拿到data的title裡面的東西 = 將data(object物件)裡的title(F12Console)內容取出  在賦值給title(變數)
+
+        // 從data物件的entrys[陣列索引] 逐一log出 確認內容可以迴圈出來
+        // for(let i=0; i<data.entrys.length; i++){
+        // console.log(data.entry[i])}
+
+
+        let ul=document.querySelector('ul') // 用document.querySelector獲取標籤'ul'
+        let li='';
+        let entrys=data.entry // entrys=data(object物件)的entry屬性的值
+        for(let i=0;i<entrys.length;i++){ // entrys的長度(內容總數)
+            li=li+`<li class='card col-3'>
+                    <div class='card-body'>
+                        ${entrys[i].title}
+                    <div class="name">${entrys[i].author.name}</div>
+                    <div class="summary">${entrys[i].summary}</div>
+                
+                    </div>
+                   </li>`;
+        }
+        ul.innerHTML=li // 上述的for迴圈循序得出li+其之後的字串 再將該字串由ul.innerHTML=li 放到上方html的ul內
+    }
+
+
+    
+    //送出請求 // 上述都只是執行內容存在記憶體內 但未送出 所以無結果 最後一定要加上send()確實執行完送出才算完成
+    xhr.send(); // 執行上述的open||onload
+
+    // (上方xhr.open) 若是用'get'取值, send()框號內 不需輸入內容
+    // 反之get之外的Method 見readme.md檔案參考
+
+    </script>
