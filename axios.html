@@ -63,12 +63,21 @@
 * 4.建立錯誤處理
 ********************************************************/
 
+/* 
+- 優點: 容量極小 簡易 僅處理AJAX, 和fetch一樣可以用鏈式連寫在一起, 會把常用的物件自動寫出來讓使用者可以直接使用 如: config..headers..request..status..等
+        因其request保留原生內容與處理後的內容, 所以除了使用處理後的內容執行, 也保留住原生內容 使其在升級時相當方便 不需重寫AJAX, 只需要在request輸入其名即可(此為XMLHttpRequest)
+        request = 發出請求時 網路上的所有狀態內容ㄝ, 原生:respone / 處理後:responeText
+*/
+
+
+
 //發起一個axios請求
 //建立回呼函式(call back function)來處理回應時的各項行為
 //建立錯誤處理
-axios.get('https://kktix.com/events.json')
-.then((res)=>{
-    eventList(res.data)
+
+axios.get('https://kktix.com/events.json') // 去哪裡 網址 方法
+.then((res)=>{ //用什麼方法
+    eventList(res.data) // 傳什麼資料 如何處理
 })
 
 </script>
