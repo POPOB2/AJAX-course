@@ -64,7 +64,7 @@
     * 4.建立錯誤處理
     ********************************************************/
 
-    // 因為整個指令寫在一起所以以下三段的 起頭 執行 送出 寫在一個fetch內
+    // - 因為整個指令寫在一起所以以下三段的 起頭 執行 送出 寫在一個fetch內
     //建立FETCH請求及實質內容
     //建立回呼函式(call back function)來處理回應時的各項行為
     //建立錯誤處理
@@ -81,7 +81,7 @@
         // return res.blob() // 依需求選擇(檔案類型)
     })
     .then((events)=>{
-        // console.log(events.title,events.entry)
+        // console.log(events.title,events.entry) // 檢視events內的title && entry
         let title=document.querySelector(".title")
         title.innerHTML=events.title
         //console.log(data)
@@ -100,6 +100,6 @@
         }
         ul.innerHTML=li
     })
-    .catch()
+    .catch() // 回復錯誤的訊息, 若不設置則不用寫內容
 
   </script>
