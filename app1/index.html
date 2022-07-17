@@ -23,6 +23,7 @@
     </div>
     <div class="menu">
         <a href="#">首頁</a>
+        <!-- <a href="./results/health.html" target="frame">健康天地</a> -->
         <a href="#" onclick="loadpage('./results/health.html')">健康天地</a>
         <a href="#" onclick="loadpage('./results/basketball.html')">籃球介紹</a>
         <a href="#" onclick="loadpage('./results/baseball.html')">棒球介紹</a>
@@ -31,6 +32,7 @@
         <a href="#" onclick="loadpage('./results/reference.html')">資料來源</a>
     </div>
     <div class="content">
+      <!-- iframe缺點 : 此載入的內容為一個獨立頁面所以吃不到這裡的CSS/JS設定, 需要另外在寫入 -->
       <iframe src="" frameborder="0" id="frame" name="frame"></iframe>
     </div>
     <div class="footer">
@@ -41,8 +43,8 @@
 </body>
 </html>
 <script>
-//建立一個函式loadpage(page)用來載入內容至content區塊中
-function loadpage(url){
-  $(".content").load(url)
+//建立一個函式loadpage(page)用來載入內容至content區塊中 // 用AJAX取代iframe
+function loadpage(url){ // 建立用於連結的function
+  $(".content").load(url) // 載入東西到(位置).載入的東西(網址)
 }
 </script>
