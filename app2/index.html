@@ -6,14 +6,33 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>學生資料管理系統</title>
     <link rel="shortcut icon" href="#" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <!---匯入要使用的函式庫--->
-
-
 </head>
 <body>
   <h1 class="header">學生資料管理系統</h1>
+<!-- --------------------------------------------------------------------------------- -->
+<!-- edit()->form->updata()->api/updata.php->DB -->
+<!-- query(classroom)<-updata()<-api/updata.php<-DB -->
+<!-- --------------------------------------------------------------------------------- -->
+  <a href="Javascript:query(101)">101</a>
+  <a href="Javascript:query(102)">102</a>
+  <a href="Javascript:query(103)">103</a>
+  <a href="Javascript:query(104)">104</a>
+  <a href="Javascript:query(105)">105</a>
+  <a href="Javascript:query(106)">106</a>
+  <a href="Javascript:query(107)">107</a>
+  <a href="Javascript:query(108)">108</a>
+  <a href="Javascript:query(109)">109</a>
+  <a href="Javascript:query(110)">110</a>
+  <!-- +------------------------------------------------------------------------ -->
+  <div class="btn btn-primary" onclick="loadForm('add')">新增學生</div>
 
+  <div id="studentForm">
+  <h3 id="room" data-classroom="101"></h3>
+  <div id="result" style="display:none"></div> <!-- 錯誤訊息  預設為不顯示 -->
+  <table id="list"></table>
   
 </body>
 </html>
@@ -25,26 +44,106 @@
 * 4.是否會有回傳值？回傳值的功用及處理？
 * 5.是否需要更新畫面內容？更新畫面的方法？
 ************************************/
+// query(101);
 
-
+// - 建立新增表單與取得資料的自訂函式
 //新增資料的函式
-function create(){
-
+function create(){ //案後下執行
+  let form={
+    "classroom":$("#classroom").val(),// 執行新增表單內容
+    "seatnum":$("#seatnum").val(),
+    "name":$("#name").val(),
+    "birthday":$("#birthday").val()
+  }
+  //post 傳值, 這裡使用上面let form的部分縮寫下來
+  $.post("./api/insert.php",form,(res)=>{ // 把post路徑 form 給res(由insert.php處理後往下丟給log)
+    if(parseInt(res)===1){
+      alert("新增成功")
+      query(form.classroom)
+    }else{
+      alert("新增失敗")
+    }
+    // console.log(res);// 在前端接收
+  })
 }
 
-//查詢資料的函式
-function query(){
+// 查詢資料的函式
+function query(classroom){
+  $("#room").html(`現在顯示的是${classroom}班的學生`)
+  $("#room").data('classroom',classroom)
+  // console.log($("#room").data('classroom'));
+  // JSON本質為字串  {}為Object
+  $.get("api/query.php",{classroom},(students)=>{ // get 可以帶二個參數(物件)
+    students=JSON.parse(students)
+    // console.log(students);
+    let tr="";
+    students.forEach((val,idx)=>{//F12觀測順序是否正確
+      // console.log(val,idx);
+      tr=tr+`<tr>
+                <td>${val.name}</td>
+                <td>${val.birthday}</td>
+                <td>
+                  <button onclick='edit(${val.id})'>編輯(${val.id})</button>
+                  <button onclick='del(${val.id})'>刪除(${val.id})</button>
+                </td>
+              </tr>`;
+    })
 
+    $("#list").html(tr);
+  })
 }
 
-//編輯資料的函式
+// 取得要修改的學生資料---------------------------------------------------
+function edit(id){
+  $.get("./api/show.php",{id},(student)=>{
+    student=JSON.parse(student)
+    $("#eClassroom").val(student.classroom)
+    $("#eSeatnum").val(student.seat_num)
+    $("#eName").val(student.name)
+    $("#eBirthday").val(student.birthday)
+    $("#stuId").val(student.id)
+  })
+}
+
+//編輯資料的函式---------------------------------------------------
 function update(){
-
+  let form={
+    "classroom":$("#eClassroom").val(),
+    "seatnum":$("#eSeatnum").val(),
+    "name":$("#eName").val(),
+    "birthday":$("#eBirthday").val(),
+    "id":$("#stuId").val()
+}
+// console.log(form);
+$.post("./api/update.php",form,()=>{
+    $("#eClassroom").val(""),
+    $("#eSeatnum").val(""),
+    $("#eName").val(""),
+    $("#eBirthday").val(""),
+    $("#stuId").val("")
+  query(form.classroom)
+})
 }
 
-//刪除資料的函式
-function del(){
+//刪除資料的函式---------------------------------------------------
+function del(id){
+let classroom=$("#room").data('classroom')
+  $.post("./api/delete.php",{id},(res)=>{ // post到(指定位置),將id送過去, 用回呼函式處理res
+    if(parseInt(res)===1){ // 判斷有無刪除成功 若為1 有成功 則執行
+      // 在$("#result")的css(執行這些設定 主要是display改為block 讓原本的none被顯示出來).字串(內容為"刪除成功")
+      $("#result").css({background:'lightblue',color:'blue',display:'block'}).text("刪除成功")
+    }else{
+      $("#result").css({background:'pinky',color:'red',display:'block'}).text("刪除失敗")
+    }  
 
+    query(classroom); // 無論成功或失敗都重新載入一次, 以即時更新為刪除後的新資訊
+
+    // 三秒後隱藏 執行提醒---------------------------------------------------
+    settimeout(()=>{
+      $("#result").hide(500);
+    },3000)
+  })
 }
+
 
 </script>
