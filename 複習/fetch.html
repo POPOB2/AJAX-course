@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Fetch</title>
+    <link rel="shortcut icon" href="#" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .card-group{
+            width:80vw;
+            margin:auto;
+        }
+        .card-group .card{
+            flex:unset;
+            padding:1rem;
+            border:0;
+
+        }
+        .card-group .card .card-body{
+            flex:unset;
+            padding:0.5rem;
+            border:1px solid #ccc;
+            border-radius: 0.5rem;
+            min-height:15rem;
+        }
+        .name{
+            font-weight: bolder;
+            border-bottom:1px solid #999;
+            margin:0.25rem 0;
+        }
+        .summary{
+            
+            border-bottom:1px solid #ddd;
+            box-shadow: 0 0 5px #ccc;
+            margin:0.5rem 0;
+            width:90%;
+            float:right;
+
+        }
+    </style>
+</head>
+<!-- Fetch優點 : 新的做法 執行上較快, 且不像xhr原生寫法 指令那麼繁瑣 指令被整理集中起來使用 較為精簡, 使用鏈式呼叫改善語法結構  -->
+<body>
+    <h1 class="header">Fetch</h1>
+    <div class="title"></div>
+    <h4></h4>
+    <ul class="card-group">
+
+    </ul>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>    
+</body>
+</html>
+<script>
+    /********************************************************
+    * 1.api網址  https://kktix.com/events.json
+    * 2.建FETCH請求及實質內容
+    * 3.建立回呼函式(call back function)來處理回應時的各項行為
+    * 4.建立錯誤處理
+    ********************************************************/
+
+    // - 因為整個指令寫在一起所以以下三段的 起頭 執行 送出 寫在一個fetch內
+    //建立FETCH請求及實質內容
+    //建立回呼函式(call back function)來處理回應時的各項行為
+    //建立錯誤處理
+
+    // fetch()
+    // .then()
+    // .catch()
+
+     
+    // 使用鏈式呼叫, 在每個執行的東西開頭使用.then()=>{}
+    /*  . 鏈接   
+        then 然後   
+        ()=>{} 箭頭函式   
+        (被執行的東西)=>  
+        {執行的內容}
+    */
+    fetch('https://kktix.com/events.json',{method:'get'}) // fetch宣告啟用AJAX('資料路徑',{模式:'get'})
+    .then((res)=>{ // .then(回呼函式:會有回傳的資料過來), 可用function||箭頭函式
+        return res.json() // 回傳res檔案 檔案類型為json(類似xhr的open加載, 裡面所執行的拿到資料後 賦給fetch)
+        
+        // 可以透過blob(),json(),text() 轉成可用的資訊,如下
+        // return res.text() // 依需求選擇(字串類型)
+        // return res.blob() // 依需求選擇(檔案類型)
+        console.log(res.json()); /* 這裡只看的到狀態等訊息, 沒有資料內容 */
+    })
+    .then((events)=>{
+        // 與xhr的差異, 不須執行json.parse()做解析的動作, 也不需執行status等查詢狀態的動作 fetch會直接把所有狀態包成一個物件丟 到console
+        console.log(events.title,events.entry) // 檢視events內的title && entry
+
+        // 這裡開始跟xhr差不多---------------------------------------------
+        let title=document.querySelector(".title")
+        title.innerHTML=events.title
+        // console.log(data)
+        let ul=document.querySelector('ul')
+        let li='';
+        let entrys=events.entry
+        for(let i=0;i<entrys.length;i++){
+            li=li+`<li class='card col-3'>
+                    <div class='card-body'>
+                        ${entrys[i].title}
+                    <div class="name">${entrys[i].author.name}</div>
+                    <div class="summary">${entrys[i].summary}</div>
+                    </div>
+                   </li>`;
+        }
+        ul.innerHTML=li
+    })
+    .catch() // 回復錯誤的訊息, 若不設置則不用寫內容
+
+
+
+
+
+
+    // 看到這裡接下來是看jquery.html 檔案-----------------------------------------------------------------------------------------
+  </script>
